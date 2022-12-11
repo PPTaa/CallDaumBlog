@@ -1,0 +1,6 @@
+framework module Pods_DaumBlogSearch {
+  umbrella header "Pods-DaumBlogSearch-umbrella.h"
+
+  export *
+  module * { export * }
+}
