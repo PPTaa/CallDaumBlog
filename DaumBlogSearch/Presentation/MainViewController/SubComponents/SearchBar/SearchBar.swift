@@ -15,15 +15,15 @@ class SearchBar: UISearchBar {
     let disposeBag = DisposeBag()
     let searchBtn = UIButton()
     
-    //SearchBar 버튼 탭 이벤트
-    let searchButtonTapped = PublishRelay<Void>() // onnext만 받는 퍼블리시 서브젝트
-    
-    // SearchBar외부로 내보낼 이벤트
-    var shouldLoadResult = Observable<String>.of("") // 초기값은 "" 로 지정
+//    //SearchBar 버튼 탭 이벤트
+//    let searchButtonTapped = PublishRelay<Void>() // onnext만 받는 퍼블리시 서브젝트
+//
+//    // SearchBar외부로 내보낼 이벤트
+//    var shouldLoadResult = Observable<String>.of("") // 초기값은 "" 로 지정
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        bind()
+//        bind()
         attribute()
         layout()
     }
@@ -33,7 +33,11 @@ class SearchBar: UISearchBar {
     }
     
     // ui들의 바인딩 작업
-    private func bind() {
+    func bind(_ viewModel: SearchBarViewModel) {
+        
+        self.rx.text
+            .bind(to: viewModel.queryText)
+            .disposed(by: disposeBag)
         // searchbar의 search버튼이 눌렸을 경우
         
         // 버튼이 눌렸을 경우
@@ -43,18 +47,13 @@ class SearchBar: UISearchBar {
                 self.rx.searchButtonClicked.asObservable(), // 서치버튼의 클릭 이벤트를 옵저버블로 만듬
                 searchBtn.rx.tap.asObservable() // 버튼을 탭한경우를 옵저버블로 만듬
             ) // 두개 모두 같은 작업이기 때문에 머지해줌
-            .bind(to: searchButtonTapped) // searchButtonTapped가 이벤트를 가질수 있도록 바인딩 해줌
+            .bind(to: viewModel.searchButtonTapped) // searchButtonTapped가 이벤트를 가질수 있도록 바인딩 해줌
             .disposed(by: disposeBag)
         
-        searchButtonTapped
+        viewModel.searchButtonTapped
             .asSignal() //해당 서브젝트를 시그널로 변환
             .emit(to: self.rx.endEditing) // 서치바가 가지는 delegate와 연결하는 커스텀
             .disposed(by: disposeBag)
-    
-        self.shouldLoadResult = searchButtonTapped
-            .withLatestFrom(self.rx.text) { $1 ?? "" } // 가장 최신의 searchBar의 text를 대입
-            .filter { !$0.isEmpty } // 빈값이 전달되지 않도록
-            .distinctUntilChanged() // 중복값이 전달되지 않도록
     }
     
     private func attribute() {

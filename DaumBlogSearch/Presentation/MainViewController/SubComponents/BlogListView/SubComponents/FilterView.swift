@@ -16,12 +16,12 @@ class FilterView: UITableViewHeaderFooterView {
     let sortBtn = UIButton()
     let bottomBorder = UIView()
     
-    //Filter 외부에서 관찰
-    let sortButtonTapped = PublishRelay<Void>() // onnext만 받는 퍼블리시 서브젝트
+//    //Filter 외부에서 관찰
+//    let sortButtonTapped = PublishRelay<Void>() // onnext만 받는 퍼블리시 서브젝트
     
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
-        bind()
+//        bind()
         attribute()
         layout()
     }
@@ -31,10 +31,10 @@ class FilterView: UITableViewHeaderFooterView {
     }
     
     // ui들의 바인딩 작업
-    private func bind() {
+    func bind(_ viewModel: FilterViewModel) {
         // sort버튼이 눌렸을 경우
         sortBtn.rx.tap
-            .bind(to: sortButtonTapped)
+            .bind(to: viewModel.sortButtonTapped)
             .disposed(by: disposeBag)
         
     }

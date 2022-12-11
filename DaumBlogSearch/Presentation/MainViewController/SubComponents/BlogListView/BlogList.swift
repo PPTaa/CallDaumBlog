@@ -24,11 +24,11 @@ class BlogList: UITableView {
     )
     // 38019a4da5bf2ed28c27502ad7d34eed
     // MainViewController -> BlogList
-    let cellData = PublishSubject<[BlogListCellData]>()
+//    let cellData = PublishSubject<[BlogListCellData]>()
     
     override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: frame, style: style)
-        bind()
+//        bind()
         attribute()
     }
     
@@ -36,10 +36,11 @@ class BlogList: UITableView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func bind() {
+    func bind(_ viewModel: BlogListViewModel) {
+        headerView.bind(viewModel.filterViewModel)
+        
         //  tableView의 Delegate인 cellForRowAt과 같은 역할
-        cellData
-            .asDriver(onErrorJustReturn: []) // 에러가 발생하면 빈 어레이를 리턴하도록 설정
+        viewModel.cellData
             .drive(self.rx.items) {tv, row, data in // 테이블 뷰의 items는 어떻게 전달 해줄지
                 let index = IndexPath(row: row, section: 0)
                 let cell = tv.dequeueReusableCell(withIdentifier: "BlogListCell", for: index) as! BlogListCell
